@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Web App & iOS App Configuration -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Process Terminal">
+    <title>Stockbee Process Terminal</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --green-accent: #22c55e;
+            --red-accent: #ef4444;
+            --yellow-accent: #eab308;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 90px;
+            padding: 8px 10px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-analyze:hover {
+            background-color: #1d4ed8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .status-green { background: rgba(34, 197, 94, 0.15); color: var(--green-accent); border: 1px solid var(--green-accent); }
+        .status-red { background: rgba(239, 68, 68, 0.15); color: var(--red-accent); border: 1px solid var(--red-accent); }
+        .status-yellow { background: rgba(234, 179, 8, 0.15); color: var(--yellow-accent); border: 1px solid var(--yellow-accent); }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .text-focus { color: var(--green-accent); }
+        .text-avoid { color: var(--red-accent); }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .rules-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid #38bdf8;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>STOCKBEE PROCESS TERMINAL</h1>
+
+    <div class="grid">
+        <!-- Input Form -->
+        <div class="card">
+            <h2>Market Monitor Inputs</h2>
+            <div class="form-group">
+                <label for="up4">Stocks Up 4%+ Today:</label>
+                <input type="number" id="up4" value="220">
+            </div>
+            <div class="form-group">
+                <label for="down4">Stocks Down 4%+ Today:</label>
+                <input type="number" id="down4" value="131">
+            </div>
+            <div class="form-group">
+                <label for="ratio5">5-Day Ratio:</label>
+                <input type="number" step="0.01" id="ratio5" value="0.87">
+            </div>
+            <div class="form-group">
+                <label for="ratio10">10-Day Ratio:</label>
+                <input type="number" step="0.01" id="ratio10" value="0.87">
+            </div>
+            <div class="form-group">
+                <label for="up25Q">Up 25%+ in Quarter:</label>
+                <input type="number" id="up25Q" value="872">
+            </div>
+            <div class="form-group">
+                <label for="down25Q">Down 25%+ in Quarter:</label>
+                <input type="number" id="down25Q" value="1317">
+            </div>
+            <div class="form-group">
+                <label for="up13_34d">Up 13%+ in 34 Days:</label>
+                <input type="number" id="up13_34d" value="840">
+            </div>
+            <div class="form-group">
+                <label for="down13_34d">Down 13%+ in 34 Days:</label>
+                <input type="number" id="down13_34d" value="2054">
+            </div>
+            <div class="form-group">
+                <label for="t2108">T2108 (%):</label>
+                <input type="number" step="0.01" id="t2108" value="20.53">
+            </div>
+
+            <button class="btn-analyze" onclick="evaluateMarket(true)">Evaluate Daily Gameplan</button>
+        </div>
+
+        <!-- Output Guidance -->
+        <div class="card">
+            <h2>Execution Directive</h2>
+            <div id="statusBadge" class="status-badge status-red">Red Monitor / Hostile</div>
+
+            <div class="section-title text-focus">✓ SETUPS TO FOCUS ON</div>
+            <ul id="focusSetups"></ul>
+
+            <div class="section-title text-avoid">✕ SETUPS TO AVOID</div>
+            <ul id="avoidSetups"></ul>
+
+            <div class="rules-box" id="sizingRules"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load parameters from URL if present (enables desktop to phone sync)
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fields = ['up4', 'down4', 'ratio5', 'ratio10', 'up25Q', 'down25Q', 'up13_34d', 'down13_34d', 't2108'];
+    
+    let hasParams = false;
+    fields.forEach(field => {
+        if (urlParams.has(field)) {
+            document.getElementById(field).value = urlParams.get(field);
+            hasParams = true;
+        }
+    });
+
+    evaluateMarket(false);
+};
+
+function evaluateMarket(updateUrl = true) {
+    const up4 = parseFloat(document.getElementById('up4').value) || 0;
+    const down4 = parseFloat(document.getElementById('down4').value) || 0;
+    const ratio5 = parseFloat(document.getElementById('ratio5').value) || 0;
+    const ratio10 = parseFloat(document.getElementById('ratio10').value) || 0;
+    const up25Q = parseFloat(document.getElementById('up25Q').value) || 0;
+    const down25Q = parseFloat(document.getElementById('down25Q').value) || 0;
+    const up13_34d = parseFloat(document.getElementById('up13_34d').value) || 0;
+    const down13_34d = parseFloat(document.getElementById('down13_34d').value) || 0;
+    const t2108 = parseFloat(document.getElementById('t2108').value) || 0;
+
+    // Update URL query parameters so copying/pasting URL transfers exact inputs
+    if (updateUrl && window.history.replaceState) {
+        const params = new URLSearchParams({
+            up4, down4, ratio5, ratio10, up25Q, down25Q, up13_34d, down13_34d, t2108
+        });
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
+        window.history.replaceState({path: newUrl}, '', newUrl);
+    }
+
+    const badge = document.getElementById('statusBadge');
+    const focusList = document.getElementById('focusSetups');
+    const avoidList = document.getElementById('avoidSetups');
+    const rulesBox = document.getElementById('sizingRules');
+
+    focusList.innerHTML = '';
+    avoidList.innerHTML = '';
+
+    // Decision Logic Engine
+    let regime = '';
+
+    if (t2108 <= 20) {
+        regime = 'OVERSOLD_EXTREME';
+    } else if (up4 >= 300 && ratio5 > 1.25 && up25Q > down25Q) {
+        regime = 'POWER_GREEN';
+    } else if (up4 >= 200 && up25Q > down25Q && ratio5 >= 1.0) {
+        regime = 'NORMAL_GREEN';
+    } else if (down25Q > up25Q || down13_34d > up13_34d || ratio5 < 0.90) {
+        regime = 'RED_HOSTILE';
+    } else {
+        regime = 'YELLOW_NEUTRAL';
+    }
+
+    // Apply Specific Directives
+    if (regime === 'POWER_GREEN') {
+        badge.className = 'status-badge status-green';
+        badge.innerText = 'AGGRESSIVE GREEN (FULL BULL)';
+        addListItems(focusList, [
+            'Full Position Episodic Pivots (EPs) with ORB entries',
+            'High Tight Flags (HTFs) & Momentum Breakouts',
+            'Multi-day / Multi-week swing holds',
+            'Tranche Pyramiding up to 100%-150% account size'
+        ]);
+        addListItems(avoidList, [
+            'Shorting breakouts or counter-trend trades',
+            'Selling winning positions too early on Day 1'
+        ]);
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Full Risk ($120 / 1.0%). Maximum position sizing permitted. Aggressive overnight holds enabled.';
+
+    } else if (regime === 'NORMAL_GREEN') {
+        badge.className = 'status-badge status-green';
+        badge.innerText = 'GREEN (NORMAL SWING REGIME)';
+        addListItems(focusList, [
+            'Episodic Pivots (EPs) with tight stop structures',
+            'Standard Momentum Breakouts / Anticipation setups',
+            'Trailing stops with 3 to 5 day swing horizons'
+        ]);
+        addListItems(avoidList, [
+            'Chasing extended stocks >3 days up from base',
+            'Over-leveraging into secondary breakouts'
+        ]);
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Standard Risk ($120 / 1.0%). Max position size 50%–100% per trade depending on stop distance.';
+
+    } else if (regime === 'RED_HOSTILE') {
+        badge.className = 'status-badge status-red';
+        badge.innerText = 'RED MONITOR / HOSTILE (DEFENSIVE)';
+        addListItems(focusList, [
+            'Top-Tier Catalyst EPs ONLY (1m/5m ORB tight entries)',
+            'Intraday-only momentum (Cash close before 4 PM)',
+            'Fast Oversold mean-reversion bounces (1-2 day max hold)',
+            'Cash preservation / Sitting on hands'
+        ]);
+        addListItems(avoidList, [
+            'Generic swing breakouts / High Tight Flags without catalysts',
+            'Carrying new long swing positions overnight',
+            'Sizing up 100%+ or using margin',
+            'Averaging down / Buying unconfirmed dips'
+        ]);
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Half-Risk or Intraday-Only. Max position size 20%–33% of account equity. Absolute risk hard-capped at $120.';
+
+    } else if (regime === 'OVERSOLD_EXTREME') {
+        badge.className = 'status-badge status-yellow';
+        badge.innerText = 'EXTREME OVERSOLD (BOUNCE WATCH)';
+        addListItems(focusList, [
+            'Quick Mean-Reversion / Oversold Bounces (T2108 < 20%)',
+            'High Relative Volume EPs decoupling from market',
+            'Intraday scalp breakouts off key support levels'
+        ]);
+        addListItems(avoidList, [
+            'Initiating structural multi-week trend trades',
+            'Shorting panic lows at key market support'
+        ]);
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Tactical Sizing. Lock in partial profits (+2R to +3R) quickly. Do not hold overnight without a large profit cushion.';
+
+    } else {
+        badge.className = 'status-badge status-yellow';
+        badge.innerText = 'NEUTRAL / MIXED BREADTH';
+        addListItems(focusList, [
+            'Select high-volume Earnings/Catalyst EPs',
+            'Delayed EPs (DEP) consolidating on Day 2 or 3',
+            'Quick profit target takers (+2R to +3R)'
+        ]);
+        addListItems(avoidList, [
+            'Wide-stop breakouts',
+            'Aggressive position sizing across multiple positions'
+        ]);
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Standard to Reduced Risk. Keep trade count small until ratios cross above 1.20.';
+    }
+}
+
+function addListItems(element, items) {
+    items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerText = item;
+        element.appendChild(li);
+    });
+}
+</script>
+
+</body>
+</html>
