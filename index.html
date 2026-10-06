@@ -290,18 +290,24 @@ function evaluateMarket(updateUrl = true) {
     focusList.innerHTML = '';
     avoidList.innerHTML = '';
 
-    // Decision Logic Engine
+    // Decision Logic Engine — aligned with the morning routine's 3-step posture mapping
+    // (the routine is the authority). Step 1: 5-day/10-day ratio agreement vs 1.0.
+    // Step 2: T2108 level (< 20 = washed-out bounce watch). Step 3: raw-count/structure cross-check.
+    const bothAbove = ratio5 > 1 && ratio10 > 1;
+    const bothBelow = ratio5 < 1 && ratio10 < 1;
+    const structBull = up25Q > down25Q && up13_34d > down13_34d;
+    const rawBull = up4 > down4;
+
     let regime = '';
 
-    if (t2108 <= 20) {
+    if (t2108 < 20) {
         regime = 'OVERSOLD_EXTREME';
-    } else if (up4 >= 300 && ratio5 > 1.25 && up25Q > down25Q) {
-        regime = 'POWER_GREEN';
-    } else if (up4 >= 200 && up25Q > down25Q && ratio5 >= 1.0) {
-        regime = 'NORMAL_GREEN';
-    } else if (down25Q > up25Q || down13_34d > up13_34d || ratio5 < 0.90) {
+    } else if (bothBelow) {
         regime = 'RED_HOSTILE';
+    } else if (bothAbove && rawBull && structBull) {
+        regime = (up4 >= 300 && ratio5 > 1.25) ? 'POWER_GREEN' : 'NORMAL_GREEN';
     } else {
+        // Split (fast flipped, slow not confirmed) or unconfirmed strength: stay selective
         regime = 'YELLOW_NEUTRAL';
     }
 
@@ -339,10 +345,10 @@ function evaluateMarket(updateUrl = true) {
         badge.className = 'status-badge status-red';
         badge.innerText = 'RED MONITOR / HOSTILE (DEFENSIVE)';
         addListItems(focusList, [
-            'Top-Tier Catalyst EPs ONLY (1m/5m ORB tight entries)',
-            'Intraday-only momentum (Cash close before 4 PM)',
-            'Fast Oversold mean-reversion bounces (1-2 day max hold)',
-            'Cash preservation / Sitting on hands'
+            'Cash preservation / Sitting on hands',
+            'Paper-trade only — log setups for the evening review',
+            'Build the DEP Candidates watchlist from recent EP-volume days',
+            'Review the trade journal and study 20%/50% movers'
         ]);
         addListItems(avoidList, [
             'Generic swing breakouts / High Tight Flags without catalysts',
@@ -350,7 +356,7 @@ function evaluateMarket(updateUrl = true) {
             'Sizing up 100%+ or using margin',
             'Averaging down / Buying unconfirmed dips'
         ]);
-        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Half-Risk or Intraday-Only. Max position size 20%–33% of account equity. Absolute risk hard-capped at $120.';
+        rulesBox.innerHTML = '<strong>Sizing & Risk:</strong> Stand aside. Zero new risk while posture is NO — cash is a position. Paper-trade setups for review only.';
 
     } else if (regime === 'OVERSOLD_EXTREME') {
         badge.className = 'status-badge status-yellow';
